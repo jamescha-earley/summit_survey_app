@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+venv/
+.env/
+
+# Logs
+*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Snowflake private key
+*.p8
+*.pem
+
+# VS Code settings
+.vscode/
+
+.env
