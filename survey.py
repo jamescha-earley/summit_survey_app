@@ -1,46 +1,37 @@
 import streamlit as st
 import uuid
-import json
 import os
-import tempfile
 from datetime import datetime, timezone
 import snowflake.connector
-from dotenv import load_dotenv
-
-# ------------------------------------------------------------------------------
-# ENVIRONMENT SETUP
-# ------------------------------------------------------------------------------
-# Load environment variables from .env file
-load_dotenv()
 
 # ------------------------------------------------------------------------------
 # SNOWFLAKE SETUP
 # ------------------------------------------------------------------------------
 def get_snowflake_connection():
-    """Create a connection to Snowflake using environment variables
+    """Create a connection to Snowflake using Streamlit secrets
     
     Supports either username/password or PAT authentication
     """
     # Check if PAT is configured
-    if os.getenv('SNOWFLAKE_PAT'):
+    if 'SNOWFLAKE_PAT' in st.secrets:
         # Connect using PAT authentication
         return snowflake.connector.connect(
-            account=os.getenv('SNOWFLAKE_ACCOUNT'),
-            user=os.getenv('SNOWFLAKE_USER'),
-            password=os.getenv('SNOWFLAKE_PAT'),
-            warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
-            database=os.getenv('SNOWFLAKE_DATABASE'),
-            schema=os.getenv('SNOWFLAKE_SCHEMA')
+            account=st.secrets.SNOWFLAKE_ACCOUNT,
+            user=st.secrets.SNOWFLAKE_USER,
+            password=st.secrets.SNOWFLAKE_PAT,
+            warehouse=st.secrets.SNOWFLAKE_WAREHOUSE,
+            database=st.secrets.SNOWFLAKE_DATABASE,
+            schema=st.secrets.SNOWFLAKE_SCHEMA
         )
     else:
         # Fall back to password authentication
         return snowflake.connector.connect(
-            user=os.getenv('SNOWFLAKE_USER'),
-            password=os.getenv('SNOWFLAKE_PASSWORD'),
-            account=os.getenv('SNOWFLAKE_ACCOUNT'),
-            warehouse=os.getenv('SNOWFLAKE_WAREHOUSE'),
-            database=os.getenv('SNOWFLAKE_DATABASE'),
-            schema=os.getenv('SNOWFLAKE_SCHEMA')
+            user=st.secrets.SNOWFLAKE_USER,
+            password=st.secrets.SNOWFLAKE_PASSWORD,
+            account=st.secrets.SNOWFLAKE_ACCOUNT,
+            warehouse=st.secrets.SNOWFLAKE_WAREHOUSE,
+            database=st.secrets.SNOWFLAKE_DATABASE,
+            schema=st.secrets.SNOWFLAKE_SCHEMA
         )
 
 # ------------------------------------------------------------------------------
