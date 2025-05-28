@@ -368,6 +368,9 @@ elif q_idx == len(questions):
         # 💬 Custom group-specific message
         st.markdown("### 💬 Why this fits you")
         st.markdown(custom_result_messages.get(label, "You're awesome, and your style makes a big impact."))
+        st.markdown("Connect with your community and explore opportunities to contribute:")
+        for cta in group_ctas.get(label, []):
+            st.markdown(f"- {cta}")
         if st.button("Reset Quiz"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
