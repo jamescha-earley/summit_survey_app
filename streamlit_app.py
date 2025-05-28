@@ -325,7 +325,7 @@ elif q_idx == len(questions):
         st.title("Your Community Engagement Survey Result")
         group_image_map = {
             "The Visionary": "VISIONARY.png",
-            "The Connector": "CONNECTORide.png",
+            "The Connector": "CONNECTOR.png",
             "The Gatherer": "GATHERER.png",
             "The Guide": "GUIDE.png"
         }
