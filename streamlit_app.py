@@ -327,7 +327,7 @@ elif q_idx == len(questions):
             "The Visionary": "VISIONARY.png",
             "The Connector": "CONNECTORide.png",
             "The Gatherer": "GATHERER.png",
-            "The Guide": "GUIDE .png"
+            "The Guide": "GUIDE.png"
         }
         
         group_img = group_image_map.get(st.session_state.top_group_label)
@@ -356,7 +356,7 @@ elif q_idx == len(questions):
                 "[User Groups](https://usergroups.snowflake.com/)"
             ],
             "The Guide": [
-                "[Streamlit Community](https://streamlit.io/community)",
+                "[Streamlit Community](https://discuss.streamlit.io/)",
                 "[Snowflake Community](https://snowflake.discourse.group/)"
             ]
         }
