@@ -356,7 +356,7 @@ elif q_idx == len(questions):
                 "[User Groups](https://usergroups.snowflake.com/)"
             ],
             "The Guide": [
-                "[Streamlit Community](https://streamlit.io/community)",
+                "[Streamlit Community](https://discuss.streamlit.io/)",
                 "[Snowflake Community](https://snowflake.discourse.group/)"
             ]
         }
