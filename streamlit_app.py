@@ -268,7 +268,7 @@ if q_idx < len(questions):
 
     st.subheader(f"Question {q_idx + 1}")
     with st.form(key=f"form_{q['key']}"):
-        answer = st.selectbox(q["question"], q["options"])
+        answer = st.selectbox(q["question"], q["options"], index=None)
         submitted = st.form_submit_button("Submit Answer")
         if submitted:
             st.session_state.answers[q["key"]] = answer
