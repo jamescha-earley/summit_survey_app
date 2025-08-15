@@ -301,7 +301,7 @@ elif q_idx == len(questions):
                     cursor = conn.cursor()
                     
                     insert_sql = f"""
-                    INSERT INTO survey_responses_London (
+                    INSERT INTO SURVEY_RESPONSES_LONDON (
                         response_id, timestamp, name, email, result_group
                     )
                     VALUES (
