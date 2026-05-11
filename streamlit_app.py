@@ -49,12 +49,8 @@ def get_file_from_local(file_name):
 # ------------------------------------------------------------------------------
 # INIT SESSION STATE
 # ------------------------------------------------------------------------------
-if "current_question" not in st.session_state:
-    st.session_state.current_question = 0
 if "answers" not in st.session_state:
     st.session_state.answers = {}
-if "quiz_started" not in st.session_state:
-    st.session_state.quiz_started = False
 if "result_message" not in st.session_state:
     st.session_state.result_message = None
 
@@ -120,18 +116,18 @@ group_map = {
         "Learning and reading from others' experiences": ["Community Discourse"],
         "Creating content, apps or tools": ["Data Superheroes", "Streamlit Creators"],
         "Answering technical questions or helping others": ["The Squad"],
-        "Attending in-person events and networking": ["User Groups"]
+        "Attending in-person events and networking": ["User Groups", "SVAI Hub"]
     },
     "motivation": {
         "Recognition as a leader and visibility into upcoming product innovations": ["Data Superheroes", "Streamlit Creators"],
-        "Connecting with others who geek out on the same stuff": ["User Groups"],
+        "Connecting with others who geek out on the same stuff": ["User Groups", "SVAI Hub"],
         "Giving back and helping people learn": ["The Squad"],
         "Learning and upskilling": ["Community Discourse"]
     },
     "contributions": {
         "Sharing insights and driving thought leadership through speaking engagements and content creation": ["Data Superheroes", "Streamlit Creators"],
         "Answering questions or giving feedback": ["The Squad"],
-        "Collaborating with others in real time, learning from peers, and connecting over shared interests": ["User Groups"],
+        "Collaborating with others in real time, learning from peers, and connecting over shared interests": ["User Groups", "SVAI Hub"],
         "Just attending and learning": ["Community Discourse", "User Groups"]
     },
     "tech_level": {
@@ -146,6 +142,7 @@ group_labels = {
     "Streamlit Creators": "The Visionary",
     "The Squad": "The Connector",
     "User Groups": "The Gatherer",
+    "SVAI Hub": "The Gatherer",
     "Community Discourse": "The Guide"
 }
 
@@ -158,7 +155,8 @@ group_ctas = {
         "[The Squad](https://www.snowflake.com/en/snowflake-squad/)"
     ],
     "The Gatherer": [
-        "[User Groups](https://usergroups.snowflake.com/)"
+        "[User Groups](https://usergroups.snowflake.com/)",
+        "[SVAI Hub](https://siliconvalleyaihub.com/)"
     ],
     "The Guide": [
         "[Streamlit Community](https://streamlit.io/community)",
@@ -187,30 +185,24 @@ def determine_result(answers):
 # ------------------------------------------------------------------------------
 # UI FLOW
 # ------------------------------------------------------------------------------
-if not st.session_state.quiz_started:
-    image_url = 'https://raw.githubusercontent.com/sfc-gh-cnantasenamat/sf-img/refs/heads/main/img/data-heroes.svg'
+if not st.session_state.get("show_result", False):
+    image_path = get_file_from_local("data_hero_shield.png")
+    if image_path:
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image(image_path, use_container_width=True)
+
     st.markdown(
-        f"""
+        """
         <style>
-        /* Center the custom image */
-        .centered-img {{
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 350px; /* Adjust as needed */
-        }}
         /* Center the Streamlit button */
-        div.stButton > button {{
+        div.stButton > button {
             display: block;
             margin-left: auto;
             margin-right: auto;
-        }}
+        }
         </style>
         
-        <!-- Centered Image -->
-        <img src="{image_url}" 
-     style="width: 100%; max-width: 512px; display: block; margin: 0 auto;"  />
-
         <!-- Centered Heading -->
         <h1 style='text-align:center'>What type of Community Contributor are you?</h1>
         
@@ -224,159 +216,101 @@ if not st.session_state.quiz_started:
         unsafe_allow_html=True
     )
 
-    st.markdown("""
-        <style>
-        .bg-image-1 {
-          position: absolute;
-          left: -80px;
-          top: -470px;
-          width: 200px;
-        }
-        .bg-image-2 {
-          position: absolute;
-          right: -80px;
-          bottom: -200px;
-          width: 200px;
-        }
-        .bg-image-3 {
-          position: absolute;
-          right: -60px;
-          bottom: -140px;
-          width: 100px;
-        }
-        </style>
-        <div class="image-container">
-          <img class="bg-image-1" src="https://raw.githubusercontent.com/sfc-gh-cnantasenamat/sf-img/main/img/arrow-star-blue.svg" />
-          <img class="bg-image-2" src="https://raw.githubusercontent.com/sfc-gh-cnantasenamat/sf-img/main/img/arrow-gradient.svg" />
-          <img class="bg-image-3" src="https://raw.githubusercontent.com/sfc-gh-cnantasenamat/sf-img/main/img/d4b_cup.gif" />
-        </div>
-        """, unsafe_allow_html=True)
-    if st.button("Start Survey"):
-        st.session_state.quiz_started = True
-        st.rerun()
-    st.stop()
+    with st.form(key="quiz_form"):
+        answers = {}
+        for q in questions:
+            st.markdown(f"**{q['question']}**")
+            answers[q["key"]] = st.selectbox(q["question"], q["options"], index=None, label_visibility="collapsed")
+            st.divider()
 
-# ------------------------------------------------------------------------------
-# QUIZ FLOW
-# ------------------------------------------------------------------------------
-q_idx = st.session_state.current_question
-if q_idx < len(questions):
-    q = questions[q_idx]
-    image_path = get_file_from_local(q["image"])
-    if image_path:
-        st.image(image_path, use_container_width=True)
-
-    st.subheader(f"Question {q_idx + 1}")
-    with st.form(key=f"form_{q['key']}"):
-        answer = st.selectbox(q["question"], q["options"], index=None)
-        submitted = st.form_submit_button("Submit Answer")
-        if submitted:
-            st.session_state.answers[q["key"]] = answer
-            st.session_state.current_question += 1
-            st.rerun()
-# ------------------------------------------------------------------------------
-# RESULT
-# ------------------------------------------------------------------------------
-elif q_idx == len(questions):
-    if not st.session_state.get("show_result", False):
-        st.subheader("Almost There!")
+        st.subheader("About You")
         name = st.text_input("Your Name")
         email = st.text_input("Your Email")
-        submit_disabled = not name.strip() or not email.strip()
-        if st.button("Submit Quiz Results", disabled=submit_disabled):
-            with st.spinner("Processing your result..."):
-                top_groups = determine_result(st.session_state.answers)
-                top_label = group_labels[top_groups[0]]
-                st.session_state.top_group_label = top_label
-                
-                response_id = str(uuid.uuid4())
-                timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-                safe_name = (name or "Anonymous").replace("'", "''")
-                safe_email = (email or "anonymous@example.com").replace("'", "''")
-                safe_label = top_label.replace("'", "''")
-                
-                # Connect to Snowflake and insert result
-                try:
-                    conn = get_snowflake_connection()
-                    cursor = conn.cursor()
-                    
-                    insert_sql = f"""
-                    INSERT INTO SURVEY_RESPONSES_LONDON (
-                        response_id, timestamp, name, email, result_group
-                    )
-                    VALUES (
-                        '{response_id}',
-                        '{timestamp}',
-                        '{safe_name}',
-                        '{safe_email}',
-                        '{safe_label}'
-                    )
-                    """
-                    cursor.execute(insert_sql)
-                    conn.commit()
-                    cursor.close()
-                    conn.close()
-                    
-                    st.session_state.show_result = True
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Failed to save results to Snowflake: {e}")
-    else:
-        st.title("Your Community Engagement Survey Result")
-        group_image_map = {
-            "The Visionary": "VISIONARY.png",
-            "The Connector": "CONNECTOR.png",
-            "The Gatherer": "GATHERER.png",
-            "The Guide": "GUIDE.png"
-        }
-        
-        group_img = group_image_map.get(st.session_state.top_group_label)
-        if group_img:
-            img_path = get_file_from_local(group_img)
-            if img_path:
-                st.image(img_path, width=300)
-        label = st.session_state.top_group_label
 
-        description_map = {
-            "The Visionary": "You build, you code, you share. Whether it's open-source tools, mind-blowing apps, or content that inspires, your ideas shape the future—and you're not afraid to push boundaries.",
-            "The Connector": "You're a collaborator, connector, and behind-the-scenes powerhouse. You build bridges between people, tools, and ideas to make awesome things happen.",
-            "The Gatherer": "You believe magic happens when people come together. You thrive in group settings and love learning alongside others.",
-            "The Guide": "You've got answers, insights, and a keyboard that never sleeps. Whether you're debugging or deep-diving into docs, you help others grow with clarity and curiosity."
-        }
-        
-        cta_links = {
-            "The Visionary": [
-                "[Data Superheroes](https://www.snowflake.com/en/data-superheroes/)",
-                "[Streamlit Creators](https://streamlit.io/become-a-creator)"
-            ],
-            "The Connector": [
-                "[The Squad](https://www.snowflake.com/en/snowflake-squad/)"
-            ],
-            "The Gatherer": [
-                "[User Groups](https://usergroups.snowflake.com/)"
-            ],
-            "The Guide": [
-                "[Streamlit Community](https://discuss.streamlit.io/)",
-                "[Snowflake Community](https://snowflake.discourse.group/)"
-            ]
-        }
-        
-        # 🎨 Identity
-        st.subheader(f"You are **{label}**")
-        st.markdown(description_map.get(label, "You're awesome, and your style makes a big impact."))
-        
-        # 💬 Custom group-specific message
-        st.markdown("### 💬 Why this fits you")
-        st.markdown(custom_result_messages.get(label, "You're awesome, and your style makes a big impact."))
-        st.markdown("Connect with your community and explore opportunities to contribute:")
-        for cta in group_ctas.get(label, []):
-            st.markdown(f"- {cta}")
-        if st.button("Reset Quiz"):
-            for k in list(st.session_state.keys()):
-                del st.session_state[k]
-            st.rerun()
-        
-        st.balloons()
+        submitted = st.form_submit_button("Submit Quiz Results")
+        if submitted:
+            # Validate all questions answered
+            unanswered = [q["question"] for q in questions if answers.get(q["key"]) is None]
+            if unanswered or not name.strip() or not email.strip():
+                st.error("Please answer all questions and provide your name and email.")
+            else:
+                st.session_state.answers = answers
+                with st.spinner("Processing your result..."):
+                    top_groups = determine_result(st.session_state.answers)
+                    top_label = group_labels[top_groups[0]]
+                    st.session_state.top_group_label = top_label
+                    
+                    response_id = str(uuid.uuid4())
+                    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+                    safe_name = (name or "Anonymous").replace("'", "''")
+                    safe_email = (email or "anonymous@example.com").replace("'", "''")
+                    safe_label = top_label.replace("'", "''")
+                    
+                    # Connect to Snowflake and insert result
+                    try:
+                        conn = get_snowflake_connection()
+                        cursor = conn.cursor()
+                        
+                        insert_sql = f"""
+                        INSERT INTO SURVEY_RESPONSES_LONDON (
+                            response_id, timestamp, name, email, result_group
+                        )
+                        VALUES (
+                            '{response_id}',
+                            '{timestamp}',
+                            '{safe_name}',
+                            '{safe_email}',
+                            '{safe_label}'
+                        )
+                        """
+                        cursor.execute(insert_sql)
+                        conn.commit()
+                        cursor.close()
+                        conn.close()
+                        
+                        st.session_state.show_result = True
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Failed to save results to Snowflake: {e}")
+else:
+    st.title("Your Community Engagement Survey Result")
+    group_image_map = {
+        "The Visionary": "Visionary.png",
+        "The Connector": "Connector.png",
+        "The Gatherer": "Gatherer.png",
+        "The Guide": "Guide.png"
+    }
+    
+    group_img = group_image_map.get(st.session_state.top_group_label)
+    if group_img:
+        img_path = get_file_from_local(group_img)
+        if img_path:
+            st.image(img_path, width=300)
+    label = st.session_state.top_group_label
+
+    description_map = {
+        "The Visionary": "You build, you code, you share. Whether it's open-source tools, mind-blowing apps, or content that inspires, your ideas shape the future—and you're not afraid to push boundaries.",
+        "The Connector": "You're a collaborator, connector, and behind-the-scenes powerhouse. You build bridges between people, tools, and ideas to make awesome things happen.",
+        "The Gatherer": "You believe magic happens when people come together. You thrive in group settings and love learning alongside others.",
+        "The Guide": "You've got answers, insights, and a keyboard that never sleeps. Whether you're debugging or deep-diving into docs, you help others grow with clarity and curiosity."
+    }
+    
+    # 🎨 Identity
+    st.subheader(f"You are **{label}**")
+    st.markdown(description_map.get(label, "You're awesome, and your style makes a big impact."))
+    
+    # 💬 Custom group-specific message
+    st.markdown("### 💬 Why this fits you")
+    st.markdown(custom_result_messages.get(label, "You're awesome, and your style makes a big impact."))
+    st.markdown("Connect with your community and explore opportunities to contribute:")
+    for cta in group_ctas.get(label, []):
+        st.markdown(f"- {cta}")
+    if st.button("Reset Quiz"):
+        for k in list(st.session_state.keys()):
+            del st.session_state[k]
+        st.rerun()
+    
+    st.balloons()
 
 if __name__ == "__main__":
     # Make sure directory for images exists
