@@ -275,17 +275,19 @@ if not st.session_state.get("show_result", False):
 else:
     st.title("Your Community Engagement Survey Result")
     group_image_map = {
-        "The Visionary": "Visionary.png",
-        "The Connector": "Connector.png",
-        "The Gatherer": "Gatherer.png",
-        "The Guide": "Guide.png"
+        "The Visionary": "VISIONARY.png",
+        "The Connector": "CONNECTOR.png",
+        "The Gatherer": "GATHERER.png",
+        "The Guide": "GUIDE.png"
     }
     
     group_img = group_image_map.get(st.session_state.top_group_label)
     if group_img:
         img_path = get_file_from_local(group_img)
         if img_path:
-            st.image(img_path, width=300)
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.image(img_path, use_container_width=True)
     label = st.session_state.top_group_label
 
     description_map = {
