@@ -273,7 +273,8 @@ if not st.session_state.get("show_result", False):
                     except Exception as e:
                         st.error(f"Failed to save results to Snowflake: {e}")
 else:
-    st.title("Your Community Engagement Survey Result")
+    label = st.session_state.top_group_label
+    st.title(f"You are {label}")
     group_image_map = {
         "The Visionary": "VISIONARY.png",
         "The Connector": "CONNECTOR.png",
@@ -288,7 +289,6 @@ else:
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 st.image(img_path, use_container_width=True)
-    label = st.session_state.top_group_label
 
     description_map = {
         "The Visionary": "You build, you code, you share. Whether it's open-source tools, mind-blowing apps, or content that inspires, your ideas shape the future—and you're not afraid to push boundaries.",
@@ -298,7 +298,6 @@ else:
     }
     
     # 🎨 Identity
-    st.subheader(f"You are **{label}**")
     st.markdown(description_map.get(label, "You're awesome, and your style makes a big impact."))
     
     # 💬 Custom group-specific message
