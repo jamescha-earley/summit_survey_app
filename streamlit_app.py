@@ -274,7 +274,7 @@ if not st.session_state.get("show_result", False):
                         st.error(f"Failed to save results to Snowflake: {e}")
 else:
     label = st.session_state.top_group_label
-    st.title(f"You are {label}")
+    st.markdown(f"<h1 style='text-align:center'>You are {label}</h1>", unsafe_allow_html=True)
     group_image_map = {
         "The Visionary": "VISIONARY.png",
         "The Connector": "CONNECTOR.png",
