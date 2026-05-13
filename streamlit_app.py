@@ -298,7 +298,8 @@ else:
     }
     
     # 🎨 Identity
-    st.markdown(description_map.get(label, "You're awesome, and your style makes a big impact."))
+    desc = description_map.get(label, "You're awesome, and your style makes a big impact.")
+    st.markdown(f"<p style='font-size:1.25rem'>{desc}</p>", unsafe_allow_html=True)
     
     # 💬 Custom group-specific message
     st.markdown("### 💬 Why this fits you")
