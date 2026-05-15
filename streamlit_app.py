@@ -52,12 +52,13 @@ def get_theme():
 # ------------------------------------------------------------------------------
 def get_file_from_local(file_name):
     """Load image from local 'images' directory based on theme"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     theme = get_theme()
-    local_path = os.path.join("images", theme, file_name)
+    local_path = os.path.join(base_dir, "images", theme, file_name)
     if os.path.exists(local_path):
         return local_path
     # Fallback to base images directory
-    fallback_path = os.path.join("images", file_name)
+    fallback_path = os.path.join(base_dir, "images", file_name)
     if os.path.exists(fallback_path):
         return fallback_path
     st.warning(f"Could not load image '{file_name}': File not found")
