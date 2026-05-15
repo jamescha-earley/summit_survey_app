@@ -38,14 +38,8 @@ def get_snowflake_connection():
 # THEME DETECTION
 # ------------------------------------------------------------------------------
 def get_theme():
-    """Detect if Streamlit is in light or dark mode"""
-    try:
-        theme = st.get_option("theme.base")
-    except Exception:
-        theme = None
-    if theme == "light":
-        return "light"
-    return "dark"
+    """Get theme from session state toggle"""
+    return st.session_state.get("theme_mode", "dark")
 
 # ------------------------------------------------------------------------------
 # LOAD IMAGE FROM LOCAL DIRECTORY
@@ -71,11 +65,15 @@ if "answers" not in st.session_state:
     st.session_state.answers = {}
 if "result_message" not in st.session_state:
     st.session_state.result_message = None
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "dark"
 
 # ------------------------------------------------------------------------------
 # RESET QUIZ
 # ------------------------------------------------------------------------------
 with st.sidebar:
+    theme_toggle = st.toggle("Light Mode", value=(st.session_state.theme_mode == "light"))
+    st.session_state.theme_mode = "light" if theme_toggle else "dark"
     if st.button("🔁 Reset Quiz"):
         for k in list(st.session_state.keys()):
             del st.session_state[k]
