@@ -38,7 +38,13 @@ def get_snowflake_connection():
 # THEME DETECTION
 # ------------------------------------------------------------------------------
 def get_theme():
-    """Get theme from session state toggle"""
+    """Get theme - checks Streamlit's theme setting, then falls back to toggle"""
+    try:
+        theme = st.get_option("theme.base")
+        if theme in ("light", "dark"):
+            return theme
+    except Exception:
+        pass
     return st.session_state.get("theme_mode", "dark")
 
 # ------------------------------------------------------------------------------
