@@ -1,6 +1,7 @@
 import streamlit as st
 import uuid
 import os
+import json
 from datetime import datetime, timezone
 import snowflake.connector
 
@@ -273,17 +274,19 @@ if not st.session_state.get("show_result", False):
                         conn = get_snowflake_connection()
                         cursor = conn.cursor()
                         
+                        answers_json = json.dumps(st.session_state.answers)
+                        safe_answers = answers_json.replace("'", "''")
+                        
                         insert_sql = f"""
-                        INSERT INTO SURVEY_RESPONSES_LONDON (
-                            response_id, timestamp, name, email, result_group
+                        INSERT INTO SURVEY_RESPONSES (
+                            response_id, timestamp, name, email, answers
                         )
-                        VALUES (
+                        SELECT
                             '{response_id}',
-                            '{timestamp}',
+                            '{timestamp}'::TIMESTAMP_NTZ,
                             '{safe_name}',
                             '{safe_email}',
-                            '{safe_label}'
-                        )
+                            PARSE_JSON('{safe_answers}')
                         """
                         cursor.execute(insert_sql)
                         conn.commit()
