@@ -274,19 +274,16 @@ if not st.session_state.get("show_result", False):
                         conn = get_snowflake_connection()
                         cursor = conn.cursor()
                         
-                        answers_json = json.dumps(st.session_state.answers)
-                        safe_answers = answers_json.replace("'", "''")
-                        
                         insert_sql = f"""
                         INSERT INTO SURVEY_RESPONSES (
-                            response_id, timestamp, name, email, answers
+                            response_id, timestamp, name, email, result_group
                         )
                         SELECT
                             '{response_id}',
                             '{timestamp}'::TIMESTAMP_NTZ,
                             '{safe_name}',
                             '{safe_email}',
-                            PARSE_JSON('{safe_answers}')
+                            '{safe_label}'
                         """
                         cursor.execute(insert_sql)
                         conn.commit()
